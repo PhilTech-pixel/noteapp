@@ -23,8 +23,8 @@ export const getAllNotes = async (req, res) => {
         res.status(200).json(notes);
 
     } catch (error) {
-        res.status(500).json({message: "Internal server error"})
-        console.log(error)
+        res.status(500).json(error.message)
+        
     }
 }
 
