@@ -9,7 +9,7 @@ export const createNote = async (req, res) => {
                 content,
             }
         );
-        res.status(201).json({message: "Note created successfully"})
+        res.status(201).json(newNote)
 
     } catch (e) {
         console.log(e.message)
@@ -19,7 +19,7 @@ export const createNote = async (req, res) => {
 
 export const getAllNotes = async (req, res) => {
     try {
-        const notes = await Note.find()
+        const notes = await Note.find().sort({createdAt: -1})
         res.status(200).json(notes);
 
     } catch (error) {
@@ -28,13 +28,44 @@ export const getAllNotes = async (req, res) => {
     }
 }
 
-export const updateNote = (req, res) => {
-    res.status(200).json({message: "Note updated successfully"})
+export const getNoteById = async (req, res) => {
+    try {
+        const {id} = req.params
+        const notes = await Note.findById(id)
+        if (!notes) res.status(404).json({message: "Note not found"})
+        res.status(200).json(notes);
 
+    } catch (error) {
+        res.status(500).json({message: "Internal server error"})
+        console.log(error)
+    }
 }
 
-export const deleteNote = (req, res) => {
-    res.status(200).json({message: "Note deleted successfully"})
+
+export const updateNote = async (req, res) => {
+    try {
+        const {id} = req.params
+
+        const updateNote = await Note.findByIdAndUpdate(id, req.body, {new: true});
+        if (!updateNote) res.status(404).json({message: "Note not found"})
+        res.status(200).json(updateNote)
+
+    } catch (error) {
+        res.status(500).json({message: "Note was not updated"})
+    }
+}
+
+export const deleteNote = async (req, res) => {
+    try {
+        const {id} = req.params
+        const deleteNote = await Note.findByIdAndDelete(id);
+        if (!deleteNote) res.status(404).json({message: "Note not found"})
+        res.status(200).json({message: "Note deleted successfully"})
+
+    } catch (e) {
+        res.status(500).json({message: "note was not deleted"})
+        console.log(e.message)
+    }
 
 }
 
